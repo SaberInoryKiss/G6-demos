@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-2.0.5/build/g6.js"></script>
+	</head>
+	<body>
+		<div id="mountNode"></div>
+		<script>
+			G6.registerGroup('custom', {
+			  draw(item) {
+				const group = item.getGraphicGroup();
+				const childrenBox = item.getChildrenBBox();
+				group.addShape('text', {
+				  attrs: {
+					x: childrenBox.x,
+					y: childrenBox.y,
+					text: '这是一个群组',
+					fill: 'red'
+				  }
+				});
+				return group.addShape('rect', {
+				  attrs: {
+					...childrenBox,
+					stroke: 'red'
+				  }
+				});
+			  }
+			});
+			const data = {
+			  nodes: [{
+				id: 'node1',
+				x: 100,
+				y: 200,
+				label: '节点1',
+				parent: 'group1'
+			  },{
+				id: 'node2',
+				x: 300,
+				y: 200,
+				label: '节点2',
+				parent: 'group1'
+			  }],
+			  edges: [{
+				id: 'edge1',
+				target: 'node2',
+				source: 'node1'
+			  }],
+			  groups: [{
+				id: 'group1',
+				label: '群组'
+			  }]
+			};
+			const graph = new G6.Graph({
+			  container: 'mountNode',
+			  fitView: 'cc',
+			  width: 500,
+			  height: 500,
+			});
+			graph.group({
+			  shape: 'custom'
+			});
+			graph.read(data);
+		</script>
+	</body>
+</html>

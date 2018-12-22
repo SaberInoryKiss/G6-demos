@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-2.0.5/build/g6.js"></script>
+	</head>
+	<body>
+		<div id="mountNode"></div>
+		<script>
+			G6.registerEdge('line', {
+			  draw(item) {
+				const group = item.getGraphicGroup();
+				const path = this.getPath(item);
+				return group.addShape('path', {
+				  attrs: {
+					path,
+					stroke: 'blue'
+				  }
+				});
+			  },
+			});
+			G6.registerEdge('horizontal-smooth', {
+			getPath(item) {
+				var points = item.getPoints();
+				var start = points[0];
+				var end = points[points.length - 1];
+				var hgap = Math.abs(end.x - start.x);
+				if (end.x > start.x) {
+				return [['M', start.x, start.y], ['C', start.x + hgap / 4, start.y, end.x - hgap / 2, end.y, end.x, end.y]];
+				}
+				return [['M', start.x, start.y], ['C', start.x - hgap / 4, start.y, end.x + hgap / 2, end.y, end.x, end.y]];
+			}
+			});
+			/* const MIN_ARROW_SIZE = 3;
+			G6.registerEdge('customEdge', {
+			  endArrow: {
+				path(item) {
+				  const keyShape = item.getKeyShape();
+				  let lineWidth = keyShape.attr('lineWidth');
+				  lineWidth = lineWidth > MIN_ARROW_SIZE ? lineWidth : MIN_ARROW_SIZE;
+				  const width = lineWidth * 10 / 3;
+				  const halfHeight = lineWidth * 4 / 3;
+				  const radius = lineWidth * 4;
+				  return [
+				  [ 'M', -width, halfHeight ],
+				  [ 'L', 0, 0 ],
+				  [ 'L', -width, -halfHeight ],
+				  [ 'A', radius, radius, 0, 0, 1, -width, halfHeight ],
+				  [ 'Z' ]
+				  ];
+				},
+				shorten(item) {
+				  const keyShape = item.getKeyShape();
+				  const lineWidth = keyShape.attr('lineWidth');
+				  return (lineWidth > MIN_ARROW_SIZE ? lineWidth : MIN_ARROW_SIZE) * 3.1;
+				},
+				style(item) {
+				  const keyShape = item.getKeyShape();
+				  const { strokeOpacity, stroke } = keyShape.attr();
+				  return {
+					fillOpacity: strokeOpacity,
+					fill: stroke
+				  };
+				}
+			   }
+			}); */ //注册箭头.但是好像有没有都没什么影响...
+			const data = {
+				nodes: [{
+					id: 'node1',//id必须唯一
+					x: 100,
+					y: 200
+				},{
+					id: 'node2',
+					x: 300,
+					y: 200
+				},{
+					id:'node3',
+					x:500,
+					y:200			
+				},{
+					id:'node4',
+					x:300,
+					y:400,
+				}],
+				edges: [{
+					id: 'edge1',
+					shape: 'line',
+					target: 'node2',//目标节点ID
+					source: 'node1',//源节点id
+					/* targetAnchor: 1 */ // 强制指定目标节点的连接点是索引为 1 的锚点
+				},{
+					id:'edge2',
+					shape: 'line',
+					target:'node3',
+					source:'node2',
+				},{
+					id:'edge3',
+					shape: 'horizontal-smooth',
+					target:'node4',
+					source:'node1'	
+				},{
+					id:'edge4',
+					target:'node4',
+					source:'node2',
+					style: {lineDash: [8, 5]},//虚线
+					shape: 'customEdge',
+					endArrow: true,
+					startArrow: false
+				},{
+					id:'edge5',
+					shape: 'horizontal-smooth',
+					target:'node4',
+					source:'node3'
+				}],
+			};
+			const graph = new G6.Graph({
+				
+				container: 'mountNode',
+				width: 1080,
+				height: 1080,
+			  });
+			  graph.read(data);
+			  
+			  
+			let node;
+			let dx;
+			let dy;
+			graph.on('node:dragstart', ev=>{
+				const {item} = ev;
+				const model = item.getModel();
+				node = item;
+				dx = model.x - ev.x;
+				dy = model.y - ev.y;
+			});
+			graph.on('node:drag', ev=>{
+				node && graph.update(node, {
+				x: ev.x+dx,
+				y: ev.y+dy
+				});
+			});
+			graph.on('node:dragend', ev=>{
+				node = undefined;
+			});
+		</script>
+	</body>
+</html>

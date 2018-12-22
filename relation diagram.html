@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>一个简单的关系图</title>
+    <!-- 引入 G6 文件 -->
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-2.0.5/build/g6.js"></script>
+  </head>
+  <body>
+    <!-- 创建图容器 -->
+    <div id="mountNode"></div>
+	<script>
+		/* G6.registerNode('custom', {
+		  intersectBox: 'rect'
+		}); */  //矩形相交盒
+		/* G6.registerNode('custom', {
+		  anchor: [
+			[0.5, 0],
+			[0.5, 1]
+		  ]
+		}); */  //设置锚点
+		const data = {
+			nodes: [{
+				id: 'node1',//id必须唯一
+				x: 100,
+				y: 200
+			},{
+				id: 'node2',
+				x: 300,
+				y: 200
+			},{
+				id:'node3',
+				x:400,
+				y:200			
+			},{
+				id:'node4',
+				x:200,
+				y:400
+			}],
+			edges: [{
+				id: 'edge1',
+				target: 'node2',//目标节点ID
+				source: 'node1',//源节点id
+				/* targetAnchor: 1 */ // 强制指定目标节点的连接点是索引为 1 的锚点
+			},{
+				id:'edge2',
+				target:'node3',
+				source:'node2'
+			},{
+				id:'edge3',
+				target:'node4',
+				source:'node1'	
+			},{
+				id:'edge4',
+				target:'node4',
+				source:'node2'
+			},{
+				id:'edge5',
+				target:'node4',
+				source:'node3'
+			}],
+		};
+		const graph = new G6.Graph({//基础图类绘制
+			container: 'mountNode',//传入 dom 容器或者容器id
+			width: 500,
+			height: 500
+		});
+		graph.node({
+			shape: 'custom',
+			style: {
+				fill: null,
+				stroke: '#555'
+			}
+		});
+		graph.read(data);
+	</script>
+  </body>
+</html>
